@@ -14,7 +14,7 @@
 source /broad/software/scripts/useuse
 
 # Use your dotkit
-reuse Python-3.6
+reuse Python-3.8
 reuse Anaconda3
 
 source activate model
