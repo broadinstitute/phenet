@@ -667,7 +667,9 @@ if classify or phenotype:
             model_traits = []
             used_effects = {}
 
-            trace_save_location = options.trace_out_file + var_id
+            trace_save_location = None
+            if options.trace_out_file is not None:
+                trace_save_location = options.trace_out_file + var_id
             for name in traits:
                 effect = None
                 se = None
@@ -689,14 +691,15 @@ if classify or phenotype:
 
             model_endos = [endos[name][OBJ] for name in endos]
             M = mpheno.Model(model_endos, model_traits, debug_level=options.debug_level, use_pymc3=options.pymc3)
-            #M.compute_map_estimate(max_ests=options.map_max_ests, times_seen_break=options.map_times_seen_break, opt_fun=options.map_opt_fun)
-            #Now sample
+            # M.compute_map_estimate(max_ests=options.map_max_ests, times_seen_break=options.map_times_seen_break, opt_fun=options.map_opt_fun)
+            # Now sample
             M.sample(iter=options.mcmc_samp_iter, burn=options.mcmc_samp_burn, thin=options.mcmc_samp_thin)
-            
-            M.save_trace(trace_save_location)
+
+            if trace_save_location is not None:
+                M.save_trace(trace_save_location)
             
             for endo in endos:
-                #endo_mean = M.get_map_node_value(endo)
+                # endo_mean = M.get_map_node_value(endo)
                 summary_results = M.summary([endo])
                 endo_mean = summary_results['mean']
             
