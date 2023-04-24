@@ -22,4 +22,5 @@ source activate model
 ### Run script ###
 ##################
 
-python /humgen/diabetes2/users/oliverr/git/phenet/phenet/multi_fit_new.py classify --config-file /humgen/diabetes2/users/oliverr/git/phenet/cfg/lipo_base2_trained.cfg --pymc3 --debug-level 3 --delim ";" --output-file /humgen/diabetes2/users/oliverr/phenet/out/lipo_fit_all2.cfg
+python /humgen/diabetes2/users/oliverr/git/phenet/phenet/multi_fit_new.py classify --config-file /humgen/diabetes2/users/oliverr/git/phenet/cfg/lipo_base2_trained.cfg --pymc3 --debug-level 3 --delim ";" --output-file /humgen/diabetes2/users/oliverr/phenet/out/classifieds
+
