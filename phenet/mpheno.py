@@ -218,7 +218,7 @@ class Model:
             self.MCMC.sample(iter=iter + burn, burn=burn, thin=thin, progress_bar=False)
 
     def plot_trace(self, output_file):
-        import matplotlib.pyplot as plt
+        # import matplotlib.pyplot as plt
         import arviz as az
         if self.use_pymc3:
             with self.M:
