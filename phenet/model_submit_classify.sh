@@ -6,23 +6,15 @@ num_chunks=2
 echo "script=$script"
 echo "num_chunks=$num_chunks"
 
+# This is required to use dotkits inside scripts
+source /broad/software/scripts/useuse
+
 if [[ $SGE_TASK_ID ]]; then
 
-  ######################
-  ### Dotkit section ###
-  ######################
-
-  # This is required to use dotkits inside scripts
-  source /broad/software/scripts/useuse
-
-  # Use your dotkit
   reuse Python-3.9
   reuse Anaconda3
 
   source activate model
-  ##################
-  ### Run script ###
-  ##################
 
   python /humgen/diabetes2/users/oliverr/git/phenet/phenet/multi_fit_new.py classify \
     --config-file /humgen/diabetes2/users/oliverr/git/phenet/cfg/lipo_base2_trained.cfg --pymc3 --debug-level 3 \
