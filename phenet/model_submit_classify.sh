@@ -24,6 +24,6 @@ if [[ $SGE_TASK_ID ]]; then
 
 else
   use UGER
-  qsub -N phenet -l h_vmem=3G -l h_rt=4:00:00 -cwd -t 1-$num_chunks "$script"
+  qsub -N phenet -l h_vmem=4G -l h_rt=4:00:00 -cwd -t 1-$num_chunks "$script"
 fi
 
