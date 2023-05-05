@@ -31,6 +31,6 @@ if [[ $SGE_TASK_ID ]]; then
     --delim ";" --output-file /humgen/diabetes2/users/oliverr/phenet/out/classifieds
 
 else
-    qsub -N phenet -l h_vmem=2G -l h_rt=4:00:00 -cwd -t 1-$num_chunks "$script"
+    qsub -N phenet -l h_vmem=3G -l h_rt=4:00:00 -cwd -t 1-$num_chunks "$script"
 fi
 
