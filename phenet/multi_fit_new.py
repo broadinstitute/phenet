@@ -602,8 +602,6 @@ if classify or phenotype:
             #first determine if dichotomous
             values = set()
             for var_id in variants:
-                if len(variants[var_id]) < options.min_traits:
-                    continue
                 if use_var_ids is not None and var_id not in use_var_ids:
                     continue
                 if name not in variants[var_id]:

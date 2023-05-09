@@ -5,6 +5,7 @@ num_chunks=2
 
 echo "script=$script"
 echo "num_chunks=$num_chunks"
+echo "SGE_TASK_ID=$SGE_TASK_ID"
 
 # This is required to use dotkits inside scripts
 source /broad/software/scripts/useuse
