@@ -1,7 +1,7 @@
 #!/bin/bash
 
 script=$0
-num_chunks=2
+num_chunks=3
 
 echo "script=$script"
 echo "num_chunks=$num_chunks"
