@@ -654,6 +654,7 @@ if classify or phenotype:
 
     for var_id in variants_to_write:
         if (var_id in variants) and (len(variants[var_id]) < options.min_traits):
+            log("Skipping variant %s" % var_id, DEBUG)
             continue
         if use_var_ids is not None and var_id not in use_var_ids:
             continue
@@ -756,3 +757,6 @@ if classify or phenotype:
         output_fh.flush()
     if options.output_file:
         output_fh.close()
+
+log("Done with everything!", DEBUG)
+
