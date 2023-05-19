@@ -17,6 +17,7 @@ if [[ $SGE_TASK_ID ]]; then
 
   source activate model
 
+  export THEANO_FLAGS="compiledir=/humgen/diabetes2/users/oliverr/theano/compiledirs/dir.$SGE_TASK_ID"
   python /humgen/diabetes2/users/oliverr/git/phenet/phenet/multi_fit_new.py classify \
     --config-file /humgen/diabetes2/users/oliverr/git/phenet/cfg/lipo_base2_trained.cfg --pymc3 --debug-level 3 \
     --min-traits 3 \
