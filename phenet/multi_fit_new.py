@@ -346,13 +346,11 @@ if options.num_chunks is not None and options.chunk is not None:
     import math
 
     print("Len of var_id_for_chunk", len(var_id_for_chunk))
-    num_var_per_chunk = math.ceil(float(len(var_id_for_chunk)) / options.num_chunks)
-    start_index = (options.chunk - 1) * num_var_per_chunk
-    end_index = options.chunk * num_var_per_chunk
+    start_index = round((options.chunk - 1) * float(len(var_id_for_chunk)) / options.num_chunks)
+    end_index = round(options.chunk * float(len(var_id_for_chunk)) / options.num_chunks)
     var_id_for_chunk = var_id_for_chunk[start_index:end_index]
     var_id_for_chunk = set(var_id_for_chunk)
     print("Chunk: ", options.chunk)
-    print("Num var per chunk", num_var_per_chunk)
     print("Start index: ", start_index)
     print("End index:", end_index)
     print("Len of var_id_for_chunk", len(var_id_for_chunk))
