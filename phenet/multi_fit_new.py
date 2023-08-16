@@ -32,7 +32,7 @@ def display_top(snapshot, key_type='lineno', limit=10):
 
 
 def bail(message):
-    sys.stderr.write("%s\n" % (message))
+    sys.stderr.write("%s\n" % message)
     sys.exit(1)
 
 
@@ -58,6 +58,7 @@ parser.add_option("", "--mcmc-samp-iter", type="int",
 parser.add_option("", "--mcmc-samp-burn", type="int",
                   default=100)  # number of samplings each iteration of training algorithm that are thrown away as burn-in
 parser.add_option("", "--mcmc-samp-thin", type="int", default=10)  # fraction of samplings each iteration to keep
+parser.add_option("", "--use-cauchy", action='store_true')  # Use Cauchy instead of normal distributions
 parser.add_option("", "--train-eps", type="float",
                   default=1e-3)  # difference in log-likelihoods at which to terminate training
 parser.add_option("", "--max-train-it", type="int",
@@ -73,6 +74,8 @@ parser.add_option("", "--trace-out-file", default=None)  # Save location for tra
 parser.add_option("", "--tmp-dir", default=None)  # where to write tmp files to
 
 (options, args) = parser.parse_args()
+
+print("Are we using Cauchy?", options.use_cauchy)
 
 if len(args) < 1:
     bail(usage)
@@ -503,7 +506,8 @@ if train:
 
             model_endos = [endos[name][OBJ] for name in endos]
 
-            M = mpheno.Model(model_endos, model_traits, debug_level=options.debug_level, use_pymc3=options.pymc3)
+            M = mpheno.Model(model_endos, model_traits, debug_level=options.debug_level, use_pymc3=options.pymc3,
+                             use_cauchy=options.use_cauchy)
             M.sample(iter=options.mcmc_samp_iter, burn=options.mcmc_samp_burn, thin=options.mcmc_samp_thin)
 
             # M.plot_trace('trace_plot_'+var_id)
@@ -764,7 +768,8 @@ if classify or phenotype:
                                  dichotomous=(name in dichotomous_traits), baseline=baseline))
 
             model_endos = [endos[name][OBJ] for name in endos]
-            M = mpheno.Model(model_endos, model_traits, debug_level=options.debug_level, use_pymc3=options.pymc3)
+            M = mpheno.Model(model_endos, model_traits, debug_level=options.debug_level, use_pymc3=options.pymc3,
+                             use_cauchy=options.use_cauchy)
             # M.compute_map_estimate(max_ests=options.map_max_ests, times_seen_break=options.map_times_seen_break, opt_fun=options.map_opt_fun)
             # Now sample
             M.sample(iter=options.mcmc_samp_iter, burn=options.mcmc_samp_burn, thin=options.mcmc_samp_thin)

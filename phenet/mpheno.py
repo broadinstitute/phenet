@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 import copy
 import random
@@ -56,10 +58,11 @@ class Model:
     def obs_name(self, trait):
         return "%s_obs" % trait
 
-    def __init__(self, endos, traits, debug_level=0, use_pymc3=False):
+    def __init__(self, endos, traits, debug_level=0, use_pymc3=False, use_cauchy=False):
         self.use_pymc3 = use_pymc3
         self.node_names = None
         self.debug_level = debug_level
+        self.use_cauchy = use_cauchy
 
         default_mu = 0
         default_tau = 0.1
@@ -85,7 +88,10 @@ class Model:
                         cur_mu = endo.mean
                     if endo.var is not None:
                         cur_sd = np.sqrt(endo.var)
-                    endo_nodes[endo.name] = self.pymc.Normal(endo.name, mu=cur_mu, sd=cur_sd)
+                    if self.use_cauchy:
+                        endo_nodes[endo.name] = self.pymc.Cauchy(endo.name, alpha=cur_mu, beta=cur_sd)
+                    else:
+                        endo_nodes[endo.name] = self.pymc.Normal(endo.name, mu=cur_mu, sigma=cur_sd)
 
                 trait_nodes = {}
                 mult_endo_nodes = {}
@@ -104,8 +110,12 @@ class Model:
                         mult_endo_nodes[trait.name] += endo_nodes[endo.name] * cur_beta
 
                     if trait.dichotomous or not trait.se == 0:
-                        trait_nodes[trait.name] = self.pymc.Normal(trait.name, mu=mult_endo_nodes[trait.name],
-                                                                   sd=cur_sd)
+                        if self.use_cauchy:
+                            trait_nodes[trait.name] = self.pymc.Cauchy(trait.name, alpha=mult_endo_nodes[trait.name],
+                                                                       beta=cur_sd)
+                        else:
+                            trait_nodes[trait.name] = self.pymc.Normal(trait.name, mu=mult_endo_nodes[trait.name],
+                                                                       sigma=cur_sd)
                         if trait.dichotomous:
                             # get the intercept
                             b_o = 0
@@ -118,13 +128,23 @@ class Model:
                             obs_value = trait.effect
                             if trait.baseline is not None:
                                 obs_value = trait.effect - trait.baseline
-                            obs_nodes[self.obs_name(trait.name)] = self.pymc.Normal(self.obs_name(trait.name),
-                                                                                    mu=trait_nodes[trait.name],
-                                                                                    tau=1 / (trait.se) ** 2,
-                                                                                    observed=obs_value)
+                            if self.use_cauchy:
+                                obs_nodes[self.obs_name(trait.name)] = self.pymc.Cauchy(self.obs_name(trait.name),
+                                                                                        alpha=trait_nodes[trait.name],
+                                                                                        beta=trait.se,
+                                                                                        observed=obs_value)
+                            else:
+                                obs_nodes[self.obs_name(trait.name)] = self.pymc.Normal(self.obs_name(trait.name),
+                                                                                        mu=trait_nodes[trait.name],
+                                                                                        tau=1 / (trait.se) ** 2,
+                                                                                        observed=obs_value)
                     else:
-                        trait_nodes[trait.name] = self.pymc.Normal(trait.name, mu=mult_endo_nodes[trait.name],
-                                                                   sd=cur_sd, observed=trait.effect)
+                        if self.use_cauchy:
+                            trait_nodes[trait.name] = self.pymc.Cauchy(trait.name, alpha=mult_endo_nodes[trait.name],
+                                                                       beta=cur_sd, observed=trait.effect)
+                        else:
+                            trait_nodes[trait.name] = self.pymc.Normal(trait.name, mu=mult_endo_nodes[trait.name],
+                                                                       sigma=cur_sd, observed=trait.effect)
 
             self.map_value = None
         else:
@@ -140,7 +160,10 @@ class Model:
                         cur_mu = endo.mean
                     if endo.var is not None and endo.var > 0:
                         cur_tau = 1 / endo.var
-                    endo_nodes[endo.name] = self.pymc.Normal(endo.name, mu=cur_mu, tau=cur_tau)
+                    if self.use_cauchy:
+                        endo_nodes[endo.name] = self.pymc.Cauchy(endo.name, alpha=cur_mu, beta=1 / math.sqrt(cur_tau))
+                    else:
+                        endo_nodes[endo.name] = self.pymc.Normal(endo.name, mu=cur_mu, tau=cur_tau)
 
                 trait_nodes = {}
                 obs_nodes = {}
@@ -159,7 +182,11 @@ class Model:
                             return endo_nodes[endo.name] * cur_beta
 
                     if not trait.se == 0:
-                        trait_nodes[trait.name] = self.pymc.Normal(trait.name, mu=mult_endo, tau=cur_tau)
+                        if self.use_cauchy:
+                            trait_nodes[trait.name] = self.pymc.Cauchy(trait.name, alpha=mult_endo,
+                                                                       beta=1 / math.sqrt(cur_tau))
+                        else:
+                            trait_nodes[trait.name] = self.pymc.Normal(trait.name, mu=mult_endo, tau=cur_tau)
 
                         if trait.dichotomous:
                             # get the intercept
@@ -174,13 +201,23 @@ class Model:
                             obs_value = trait.effect
                             if trait.baseline is not None:
                                 obs_value = trait.effect - trait.baseline
-                            obs_nodes[self.obs_name(trait.name)] = self.pymc.Normal(self.obs_name(trait.name),
-                                                                                    mu=trait_nodes[trait.name],
-                                                                                    tau=1 / (trait.se) ** 2,
-                                                                                    value=obs_value, observed=True)
+                            if self.use_cauchy:
+                                obs_nodes[self.obs_name(trait.name)] = self.pymc.Cauchy(self.obs_name(trait.name),
+                                                                                        alpha=trait_nodes[trait.name],
+                                                                                        beta=trait.se,
+                                                                                        value=obs_value, observed=True)
+                            else:
+                                obs_nodes[self.obs_name(trait.name)] = self.pymc.Normal(self.obs_name(trait.name),
+                                                                                        mu=trait_nodes[trait.name],
+                                                                                        tau=1 / (trait.se) ** 2,
+                                                                                        value=obs_value, observed=True)
                     else:
-                        trait_nodes[trait.name] = self.pymc.Normal(trait.name, mu=mult_endo, tau=cur_tau,
-                                                                   value=trait.effect, observed=True)
+                        if self.use_cauchy:
+                            trait_nodes[trait.name] = self.pymc.Cauchy(trait.name, alpha=mult_endo,
+                                                                       beta=1 / math.sqrt(cur_tau), value=trait.effect,
+                                                                       observed=True)
+                            trait_nodes[trait.name] = self.pymc.Normal(trait.name, mu=mult_endo, tau=cur_tau,
+                                                                       value=trait.effect, observed=True)
                     return locals()
 
             self.make_model = make_model
@@ -343,5 +380,5 @@ class Model:
                     else:
                         for endo in self.MAP.endo_nodes:
                             self.log("Early termination at iteration %s for %s: %s" % (
-                            i + 1, endo, self.MAP.endo_nodes[endo].value), DEBUG)
+                                i + 1, endo, self.MAP.endo_nodes[endo].value), DEBUG)
                     break
