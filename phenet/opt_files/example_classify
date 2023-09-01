@@ -1,0 +1,8 @@
+# A comment
+action classify
+py_script /humgen/diabetes2/users/oliverr/git/phenet/phenet/multi_fit_new.py
+config_file /humgen/diabetes2/users/oliverr/git/phenet/cfg/lipo_base2_trained.cfg
+use_cauchy true
+num_chunks 50000
+output_file_prefix /humgen/diabetes2/users/oliverr/phenet/out/classifieds
+theano_compiledirs_prefix /humgen/diabetes2/users/oliverr/theano/compiledirs/dir

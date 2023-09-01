@@ -1,15 +1,5 @@
 #!/bin/bash
 
-#############################
-### Default UGER Requests ###
-#############################
-
-# This section specifies uger requests.  
-
-######################
-### Dotkit section ###
-######################
-
 # This is required to use dotkits inside scripts
 source /broad/software/scripts/useuse
 
