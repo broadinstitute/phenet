@@ -1,0 +1,6 @@
+# A comment
+action train
+py_script /humgen/diabetes2/users/oliverr/git/phenet/phenet/multi_fit_new.py
+config_file /humgen/diabetes2/users/oliverr/git/phenet/cfg/aligned.cfg
+var_id_file /humgen/diabetes2/users/satoshi/03.variant_based/03.input_gwas/02.curate/output/aligned_lipo_var_ids/aligned_lipo_var_ids.txt
+output_file /humgen/diabetes2/users/oliverr/phenet/out/trained_aligned.cfg
