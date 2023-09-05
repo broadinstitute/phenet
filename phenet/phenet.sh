@@ -155,7 +155,7 @@ case $action in
     done
     cmd_parts+=("--pymc3")
     cmd_parts+=("--debug-level" "3")
-    cmd_parts+=("--delim" "\";\"")
+    cmd_parts+=("--delim" ";")
     cmd_parts+=("--var-id-file" "$var_id_file")
     cmd_parts+=("--output-file" "$output_file")
     if [ $dry = true ]; then
