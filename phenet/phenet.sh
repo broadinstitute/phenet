@@ -202,7 +202,7 @@ case $action in
     fi
     cmd_parts+=("--num-chunks" "$num_chunks")
     cmd_parts+=("--chunk" "$task_id")
-    cmd_parts+=("--delim" "\";\"")
+    cmd_parts+=("--delim" ";")
     cmd_parts+=("--output-file" "$output_file_prefix.$job_id.$task_id")
 
     if [ $dry =  true ]; then
