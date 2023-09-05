@@ -8,6 +8,7 @@ dry=false
 overwrite=false
 config_files=()
 use_cauchy=false
+opts_file_loaded=false
 
 while [[ $# -gt 0 ]]; do
   arg=$1
@@ -17,6 +18,7 @@ while [[ $# -gt 0 ]]; do
     -f|--file)
       file=$1
       shift
+      opts_file_loaded=true
       if [ -z "$file" ]; then
         echo "Option -f or --file needs to be followed by a file name"
         exit 1
@@ -110,6 +112,11 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [ $opts_file_loaded = false ]; then
+  echo "Need to specify at least on options file using -f."
+  exit 22
+fi
+
 function assert_is_file() {
   if [ ! -e "$1" ]; then echo "File $1 does not exist"; exit 9; fi
   if [ ! -f "$1" ]; then echo "File $1 is not a regular file"; exit 10; fi
@@ -165,7 +172,9 @@ case $action in
       source activate model
 
       # Run!
+      set -x
       "${cmd_parts[@]}"
+      set +x
 
     fi
     ;;
@@ -214,11 +223,15 @@ case $action in
         export THEANO_FLAGS="compiledir=$theano_compiledirs_prefix.$SGE_TASK_ID"
 
         # Run!
+        set -x
         "${cmd_parts[@]}"
+        set +x
 
       else
         use UGER
+        set -x
         qsub -N phenet -l h_vmem=4G -l h_rt=4:00:00 -cwd -t 1-$num_chunks "$run_script" -- "${run_args[@]}"
+        set +x
       fi
     fi
     ;;
