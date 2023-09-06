@@ -230,7 +230,7 @@ case $action in
       else
         use UGER
         set -x
-        qsub -N phenet -l h_vmem=4G -l h_rt=4:00:00 -cwd -t 1-$num_chunks "$run_script" -- "${run_args[@]}"
+        qsub -N phenet -l h_vmem=4G -l h_rt=4:00:00 -cwd -t 1-$num_chunks -F "${run_args[@]}" "$run_script"
         set +x
       fi
     fi
