@@ -9,6 +9,8 @@ overwrite=false
 config_files=()
 use_cauchy=false
 opts_file_loaded=false
+use_qsub=false
+use_qsub_specified=false
 
 while [[ $# -gt 0 ]]; do
   arg=$1
@@ -72,6 +74,21 @@ while [[ $# -gt 0 ]]; do
                 exit 12
                 ;;
             esac
+            ;;
+          use_qsub)
+            case $value in
+              true)
+                use_qsub=true
+                ;;
+              false)
+                use_qsub=false
+                ;;
+              *)
+                echo "Unknown value for use_qsub. Use true or false."
+                exit 12
+                ;;
+            esac
+            use_qsub_specified=true
             ;;
           num_chunks)
             num_chunks=$value
@@ -149,6 +166,11 @@ case $action in
       fi
     fi
 
+    if [ $use_qsub = true ]; then
+      echo "Using qsub is not supported for training."
+      exit 23
+    fi
+
     cmd_parts=("python" "$py_script" "$action")
     for config_file in "${config_files[@]}"; do
       cmd_parts+=("--config-file" "$config_file")
@@ -179,18 +201,9 @@ case $action in
     fi
     ;;
   classify)
-    if [ -z "$num_chunks" ]; then echo "No num_chunks provided"; exit 8; fi
-    if [ "$num_chunks" -le 0 ]; then echo "num_chunks needs to be larger than 0"; exit 13; fi
-    if [ -z "$output_file_prefix" ]; then echo "No num_output_file_prefix provided"; exit 8; fi
-    if [ -z "$theano_compiledirs_prefix" ]; then echo "No theano_compiledirs_prefix provided"; exit 8; fi
-
-    echo "run_script=$run_script"
-    echo "num_chunks=$num_chunks"
-    echo "SGE_TASK_ID=$SGE_TASK_ID"
-
-    if [ -n "$JOB_ID" ]; then job_id="$JOB_ID"; else job_id="<job_id>"; fi
-    if [ -n "$SGE_TASK_ID" ]; then task_id="$SGE_TASK_ID"; else task_id="<task_id>"; fi
-
+    if [ $use_qsub_specified = false ]; then
+      echo "Need to supply use_qsub option for classification."
+    fi
     cmd_parts=("python" "$py_script" "$action")
     for config_file in "${config_files[@]}"; do
       cmd_parts+=("--config-file" "$config_file")
@@ -200,39 +213,79 @@ case $action in
     if [ $use_cauchy = true ]; then
       cmd_parts+=("--use-cauchy")
     fi
-    cmd_parts+=("--num-chunks" "$num_chunks")
-    cmd_parts+=("--chunk" "$task_id")
+    if [ -n "$var_id_file" ]; then
+      assert_is_file "$var_id_file"
+      cmd_parts+=("--var-id-file" "$var_id_file")
+    fi
     cmd_parts+=("--delim" ";")
-    cmd_parts+=("--output-file" "$output_file_prefix.$job_id.$task_id")
+    if [ $use_qsub = true ]; then
+      if [ -z "$num_chunks" ]; then echo "No num_chunks provided"; exit 8; fi
+      if [ "$num_chunks" -le 0 ]; then echo "num_chunks needs to be larger than 0"; exit 13; fi
+      if [ -z "$output_file_prefix" ]; then echo "No num_output_file_prefix provided"; exit 8; fi
+      if [ -z "$theano_compiledirs_prefix" ]; then echo "No theano_compiledirs_prefix provided"; exit 8; fi
 
-    if [ $dry =  true ]; then
-      echo "This would run:"
-      echo "${cmd_parts[@]}"
+      echo "run_script=$run_script"
+      echo "num_chunks=$num_chunks"
+      echo "SGE_TASK_ID=$SGE_TASK_ID"
+
+      if [ -n "$JOB_ID" ]; then job_id="$JOB_ID"; else job_id="<job_id>"; fi
+      if [ -n "$SGE_TASK_ID" ]; then task_id="$SGE_TASK_ID"; else task_id="<task_id>"; fi
+
+      cmd_parts+=("--num-chunks" "$num_chunks")
+      cmd_parts+=("--chunk" "$task_id")
+      cmd_parts+=("--output-file" "$output_file_prefix.$job_id.$task_id")
+
+      if [ $dry =  true ]; then
+        echo "This would run:"
+        echo "${cmd_parts[@]}"
+      else
+
+        # This is required to use dotkits inside scripts
+        source /broad/software/scripts/useuse
+
+        if [[ $SGE_TASK_ID ]]; then
+
+          reuse Python-3.9
+          reuse Anaconda3
+
+          source activate model
+
+          export THEANO_FLAGS="compiledir=$theano_compiledirs_prefix.$SGE_TASK_ID"
+
+          # Run!
+          set -x
+          "${cmd_parts[@]}"
+          set +x
+
+        else
+          use UGER
+          set -x
+          qsub -N phenet -l h_vmem=4G -l h_rt=4:00:00 -cwd -t 1-$num_chunks "$run_script" -- "${run_args[@]}"
+          set +x
+        fi
+      fi
     else
+      cmd_parts+=("--output-file" "$output_file")
+      if [ $dry = true ]; then
+        echo "This would run:"
+        echo "${cmd_parts[@]}"
+      else
+        # This is required to use dotkits inside scripts
+        source /broad/software/scripts/useuse
 
-      # This is required to use dotkits inside scripts
-      source /broad/software/scripts/useuse
-
-      if [[ $SGE_TASK_ID ]]; then
-
+        # Use your dotkit
         reuse Python-3.9
         reuse Anaconda3
 
         source activate model
-
-        export THEANO_FLAGS="compiledir=$theano_compiledirs_prefix.$SGE_TASK_ID"
 
         # Run!
         set -x
         "${cmd_parts[@]}"
         set +x
 
-      else
-        use UGER
-        set -x
-        qsub -N phenet -l h_vmem=4G -l h_rt=4:00:00 -cwd -t 1-$num_chunks "$run_script" -- "${run_args[@]}"
-        set +x
       fi
+      echo yo
     fi
     ;;
   *)
