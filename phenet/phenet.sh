@@ -154,7 +154,7 @@ echo "action $action"
 
 case $action in
   train)
-    if [ "$num_chunks" -gt 1 ]; then
+    if [ -n "$num_chunks" ] && [ "$num_chunks" -gt 1 ]; then
       echo "For training, more than one chunk is not supported."
       exit
     fi
