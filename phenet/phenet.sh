@@ -154,6 +154,10 @@ echo "action $action"
 
 case $action in
   train)
+    if [ "$num_chunks" -gt 1 ]; then
+      echo "For training, more than one chunk is not supported."
+      exit
+    fi
     if [ -z "$var_id_file" ]; then echo "No var_id_file provided"; exit 8; fi
     assert_is_file "$var_id_file"
 
@@ -166,11 +170,6 @@ case $action in
       fi
     fi
 
-    if [ $use_qsub = true ]; then
-      echo "Using qsub is not supported for training."
-      exit 23
-    fi
-
     cmd_parts=("python" "$py_script" "$action")
     for config_file in "${config_files[@]}"; do
       cmd_parts+=("--config-file" "$config_file")
@@ -180,24 +179,54 @@ case $action in
     cmd_parts+=("--delim" ";")
     cmd_parts+=("--var-id-file" "$var_id_file")
     cmd_parts+=("--output-file" "$output_file")
-    if [ $dry = true ]; then
-      echo "This would run:"
-      echo "${cmd_parts[@]}"
+    if [ $use_qsub = true ]; then
+      if [ $dry = true ]; then
+        echo "This would run:"
+        echo "${cmd_parts[@]}"
+      else
+        # This is required to use dotkits inside scripts
+        source /broad/software/scripts/useuse
+
+        if [[ $SGE_TASK_ID ]]; then
+
+          reuse Python-3.9
+          reuse Anaconda3
+
+          source activate model
+
+          export THEANO_FLAGS="compiledir=$theano_compiledirs_prefix.$SGE_TASK_ID"
+
+          # Run!
+          set -x
+          "${cmd_parts[@]}"
+          set +x
+
+        else
+          use UGER
+          set -x
+          qsub -N phenet -l h_vmem=4G -l h_rt=4:00:00 -cwd "$run_script" "${run_args[@]}"
+          set +x
+        fi
+      fi
     else
-      # This is required to use dotkits inside scripts
-      source /broad/software/scripts/useuse
+      if [ $dry = true ]; then
+        echo "This would run:"
+        echo "${cmd_parts[@]}"
+      else
+        # This is required to use dotkits inside scripts
+        source /broad/software/scripts/useuse
 
-      # Use your dotkit
-      reuse Python-3.9
-      reuse Anaconda3
+        # Use your dotkit
+        reuse Python-3.9
+        reuse Anaconda3
 
-      source activate model
+        source activate model
 
-      # Run!
-      set -x
-      "${cmd_parts[@]}"
-      set +x
-
+        # Run!
+        set -x
+        "${cmd_parts[@]}"
+        set +x
+      fi
     fi
     ;;
   classify)
