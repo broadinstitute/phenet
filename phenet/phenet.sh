@@ -181,7 +181,7 @@ case $action in
     cmd_parts+=("--output-file" "$output_file")
     if [ $use_qsub = true ]; then
       if [ $dry = true ]; then
-        echo "This would run:"
+        echo "This would submit via qsub:"
         echo "${cmd_parts[@]}"
       else
         # This is required to use dotkits inside scripts
@@ -210,7 +210,7 @@ case $action in
       fi
     else
       if [ $dry = true ]; then
-        echo "This would run:"
+        echo "This would run locally:"
         echo "${cmd_parts[@]}"
       else
         # This is required to use dotkits inside scripts
@@ -265,7 +265,7 @@ case $action in
       cmd_parts+=("--output-file" "$output_file_prefix.$job_id.$task_id")
 
       if [ $dry =  true ]; then
-        echo "This would run:"
+        echo "This would submit via qsub:"
         echo "${cmd_parts[@]}"
       else
 
@@ -296,7 +296,7 @@ case $action in
     else
       cmd_parts+=("--output-file" "$output_file")
       if [ $dry = true ]; then
-        echo "This would run:"
+        echo "This would run locally:"
         echo "${cmd_parts[@]}"
       else
         # This is required to use dotkits inside scripts

@@ -1,0 +1,9 @@
+# Classify only selected variants with aligned GWAS
+action classify
+py_script /humgen/diabetes2/users/oliverr/git/phenet/phenet/multi_fit_new.py
+config_file /humgen/diabetes2/users/oliverr/git/phenet/cfg/aligned.cfg
+config_file /humgen/diabetes2/users/oliverr/phenet/out/trained_aligned_lipo_fix.cfg
+classify_aligned /humgen/diabetes2/users/satoshi/03.variant_based/02.evaluate/04.normal_with_20_vs_19variants_as_inputs/to_be_classified_75variants.txt
+num_chunks 1
+output_file_prefix /humgen/diabetes2/users/oliverr/phenet/out/classifieds_aligned
+theano_compiledirs_prefix /humgen/diabetes2/users/oliverr/theano/compiledirs/dir
