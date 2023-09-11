@@ -258,8 +258,8 @@ case $action in
       echo "num_chunks=$num_chunks"
       echo "SGE_TASK_ID=$SGE_TASK_ID"
 
-      if [ -n "$JOB_ID" ]; then job_id="$JOB_ID"; else job_id="<job_id>"; fi
-      if [ -n "$SGE_TASK_ID" ]; then task_id="$SGE_TASK_ID"; else task_id="<task_id>"; fi
+      if [ -n "$JOB_ID" ]; then job_id="$JOB_ID"; else job_id="no_job_id"; fi
+      if [ -n "$SGE_TASK_ID" ]; then task_id="$SGE_TASK_ID"; else task_id="no_task_id"; fi
 
       cmd_parts+=("--num-chunks" "$num_chunks")
       cmd_parts+=("--chunk" "$task_id")
@@ -280,7 +280,7 @@ case $action in
 
           source activate model
 
-          export THEANO_FLAGS="compiledir=$theano_compiledirs_prefix.$SGE_TASK_ID"
+          export THEANO_FLAGS="compiledir=$theano_compiledirs_prefix.$job_id.$task_id"
 
           # Run!
           set -x
