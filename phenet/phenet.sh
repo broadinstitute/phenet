@@ -232,6 +232,7 @@ case $action in
   classify)
     if [ $use_qsub_specified = false ]; then
       echo "Need to supply use_qsub option for classification."
+      exit 23
     fi
     cmd_parts=("python" "$py_script" "$action")
     for config_file in "${config_files[@]}"; do
