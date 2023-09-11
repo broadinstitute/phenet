@@ -11,6 +11,7 @@ use_cauchy=false
 opts_file_loaded=false
 use_qsub=false
 use_qsub_specified=false
+time_limit=4:00:00
 
 while [[ $# -gt 0 ]]; do
   arg=$1
@@ -104,6 +105,9 @@ while [[ $# -gt 0 ]]; do
             ;;
           theano_compiledirs_prefix)
             theano_compiledirs_prefix=$value
+            ;;
+          time_limit)
+            time_limit=$value
             ;;
           *)
             echo "Unknown key $key"
@@ -204,7 +208,7 @@ case $action in
         else
           use UGER
           set -x
-          qsub -N phenet -l h_vmem=4G -l h_rt=4:00:00 -cwd "$run_script" "${run_args[@]}"
+          qsub -N phenet -l h_vmem=4G -l h_rt="$time_limit" -cwd "$run_script" "${run_args[@]}"
           set +x
         fi
       fi
@@ -290,7 +294,7 @@ case $action in
         else
           use UGER
           set -x
-          qsub -N phenet -l h_vmem=4G -l h_rt=4:00:00 -cwd -t 1-$num_chunks "$run_script" "${run_args[@]}"
+          qsub -N phenet -l h_vmem=4G -l h_rt="$time_limit" -cwd -t 1-"$num_chunks" "$run_script" "${run_args[@]}"
           set +x
         fi
       fi
