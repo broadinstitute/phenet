@@ -1,5 +1,6 @@
 # Classify with aligned GWAS and SE-adjusted effect size
 action classify
+use_qsub true
 py_script /humgen/diabetes2/users/oliverr/git/phenet/phenet/multi_fit_new.py
 config_file /humgen/diabetes2/users/oliverr/git/phenet/cfg/aligned_adj.cfg
 config_file /humgen/diabetes2/users/oliverr/phenet/out/trained_aligned_adj.cfg
