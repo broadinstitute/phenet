@@ -109,6 +109,9 @@ while [[ $# -gt 0 ]]; do
           time_limit)
             time_limit=$value
             ;;
+          burn_in_steps)
+            burn_in_steps=$value
+            ;;
           *)
             echo "Unknown key $key"
             exit 7
@@ -179,6 +182,9 @@ case $action in
       cmd_parts+=("--config-file" "$config_file")
     done
     cmd_parts+=("--pymc3")
+    if [ -n "$burn_in_steps" ]; then
+      cmd_parts+=("--mcmc-samp-burn" "$burn_in_steps")
+    fi
     cmd_parts+=("--debug-level" "3")
     cmd_parts+=("--delim" ";")
     cmd_parts+=("--var-id-file" "$var_id_file")
@@ -243,6 +249,9 @@ case $action in
       cmd_parts+=("--config-file" "$config_file")
     done
     cmd_parts+=("--pymc3")
+    if [ -n "$burn_in_steps" ]; then
+      cmd_parts+=("--mcmc-samp-burn" "$burn_in_steps")
+    fi
     cmd_parts+=("--debug-level" "3")
     if [ $use_cauchy = true ]; then
       cmd_parts+=("--use-cauchy")
