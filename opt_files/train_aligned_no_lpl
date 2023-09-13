@@ -1,5 +1,5 @@
 action train
-use_qsub true
+use_qsub false
 time_limit 48:00:00
 py_script /humgen/diabetes2/users/oliverr/git/phenet/phenet/multi_fit_new.py
 config_file /humgen/diabetes2/users/oliverr/git/phenet/cfg/aligned.cfg
