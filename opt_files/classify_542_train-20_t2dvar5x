@@ -1,0 +1,10 @@
+# Classify with aligned GWAS
+action classify
+use_qsub true
+py_script /humgen/diabetes2/users/oliverr/git/phenet/phenet/multi_fit_new.py
+config_file /humgen/diabetes2/users/oliverr/git/phenet/cfg/aligned.cfg
+config_file /humgen/diabetes2/users/satoshi/03.variant_based/04.normal_pymc/00.run/cfg/01.trained_aligned_t2dvar5x.cfg
+var_id_file /humgen/diabetes2/users/satoshi/03.variant_based/03.input_gwas/02.curate/small_example/to_be_classified_542variants.updated.txt
+num_chunks 1
+output_file_prefix /humgen/diabetes2/users/oliverr/phenet/out/train-20_t2dvar5x_classify-542
+theano_compiledirs_prefix /humgen/diabetes2/users/oliverr/theano/compiledirs/dir
