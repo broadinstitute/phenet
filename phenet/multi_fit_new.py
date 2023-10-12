@@ -575,14 +575,20 @@ if train:
                 if FIXED not in traits[trait] or BETA not in traits[trait][FIXED]:
                     traits[trait][OBJ].beta = endo_x_trait_tot[endo][trait] / endo2_for_trait_tot[endo][trait]
                 if FIXED not in traits[trait] or VAR not in traits[trait][FIXED]:
-                    traits[trait][OBJ].var = (trait2_tot[trait] - 2 * traits[trait][OBJ].beta * endo_x_trait_tot[endo][
-                        trait] + traits[trait][OBJ].beta ** 2 * endo2_for_trait_tot[endo][trait]) / trait_n[trait]
+                    denominator = trait_n[trait]
+                    term1 = trait2_tot[trait] / denominator
+                    term2 = 2 * traits[trait][OBJ].beta * endo_x_trait_tot[endo][trait] / denominator
+                    term3 = traits[trait][OBJ].beta ** 2 * endo2_for_trait_tot[endo][trait] / denominator
+                    traits[trait][OBJ].var = term1 + term2 + term3
                     if traits[trait][OBJ].var < 0:
                         traits[trait][OBJ].var = 0
-
-                log("%s: beta=%s, mean=%s, var=%s" % (
-                trait, traits[trait][OBJ].beta, traits[trait][OBJ].beta * endos[endo][OBJ].mean,
-                traits[trait][OBJ].var), TRACE)
+                    log("%s: beta=%s, mean=%s, var=%s, term1=%s, term2=%s, term3=%s" % (
+                        trait, traits[trait][OBJ].beta, traits[trait][OBJ].beta * endos[endo][OBJ].mean,
+                        traits[trait][OBJ].var, term1, term2, term3), TRACE)
+                else:
+                    log("%s: beta=%s, mean=%s, var=%s" % (
+                        trait, traits[trait][OBJ].beta, traits[trait][OBJ].beta * endos[endo][OBJ].mean,
+                        traits[trait][OBJ].var), TRACE)
 
     output_fh = sys.stdout
     if options.output_file:
