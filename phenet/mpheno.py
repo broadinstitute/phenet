@@ -216,6 +216,7 @@ class Model:
                             trait_nodes[trait.name] = self.pymc.Cauchy(trait.name, alpha=mult_endo,
                                                                        beta=1 / math.sqrt(cur_tau), value=trait.effect,
                                                                        observed=True)
+                        else:
                             trait_nodes[trait.name] = self.pymc.Normal(trait.name, mu=mult_endo, tau=cur_tau,
                                                                        value=trait.effect, observed=True)
                     return locals()
