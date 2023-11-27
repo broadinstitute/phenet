@@ -293,12 +293,15 @@ case $action in
 
           source activate model
 
-          export THEANO_FLAGS="compiledir=$theano_compiledirs_prefix.$job_id.$task_id"
+          compile_dir=$theano_compiledirs_prefix.$job_id.$task_id
+          export THEANO_FLAGS="compiledir=$compile_dir"
 
           # Run!
           set -x
           "${cmd_parts[@]}"
           set +x
+
+          rm -fr "$compile_dir"
 
         else
           use UGER
