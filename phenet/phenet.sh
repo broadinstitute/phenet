@@ -112,6 +112,12 @@ while [[ $# -gt 0 ]]; do
           burn_in_steps)
             burn_in_steps=$value
             ;;
+          train_eps)
+            train_eps=$value
+            ;;
+          max_train_it)
+            max_train_it=$value
+            ;;
           *)
             echo "Unknown key $key"
             exit 7
@@ -185,6 +191,12 @@ case $action in
     if [ -n "$burn_in_steps" ]; then
       cmd_parts+=("--mcmc-samp-burn" "$burn_in_steps")
     fi
+    if [ -n "$train_eps" ]; then
+      cmd_parts+=("--train-eps" "$train_eps")
+    fi
+    if [ -n "$max_train_it" ]; then
+      cmd_parts+=("--max-train-it" "$max_train_it")
+    fi
     cmd_parts+=("--debug-level" "3")
     cmd_parts+=("--delim" ";")
     cmd_parts+=("--var-id-file" "$var_id_file")
@@ -251,6 +263,12 @@ case $action in
     cmd_parts+=("--pymc3")
     if [ -n "$burn_in_steps" ]; then
       cmd_parts+=("--mcmc-samp-burn" "$burn_in_steps")
+    fi
+    if [ -n "$train_eps" ]; then
+      cmd_parts+=("--train-eps" "$train_eps")
+    fi
+    if [ -n "$max_train_it" ]; then
+      cmd_parts+=("--max-train-it" "$max_train_it")
     fi
     cmd_parts+=("--debug-level" "3")
     if [ $use_cauchy = true ]; then
