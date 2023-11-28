@@ -202,6 +202,7 @@ case $action in
     cmd_parts+=("--var-id-file" "$var_id_file")
     cmd_parts+=("--output-file" "$output_file")
     if [ $use_qsub = true ]; then
+      if [ -z "$theano_compiledirs_prefix" ]; then echo "No theano_compiledirs_prefix provided"; exit 8; fi
       if [ $dry = true ]; then
         echo "This would submit via qsub:"
         echo "${cmd_parts[@]}"
@@ -209,14 +210,14 @@ case $action in
         # This is required to use dotkits inside scripts
         source /broad/software/scripts/useuse
 
-        if [[ $SGE_TASK_ID ]]; then
+        if [[ $JOB_ID ]]; then
 
           reuse Python-3.9
           reuse Anaconda3
 
           source activate model
 
-          export THEANO_FLAGS="compiledir=$theano_compiledirs_prefix.$SGE_TASK_ID"
+          export THEANO_FLAGS="compiledir=$theano_compiledirs_prefix.$JOB_ID"
 
           # Run!
           set -x

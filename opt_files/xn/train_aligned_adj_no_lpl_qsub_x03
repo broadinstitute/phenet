@@ -5,5 +5,6 @@ py_script /humgen/diabetes2/users/oliverr/git/phenet/phenet/multi_fit_new.py
 config_file /humgen/diabetes2/users/oliverr/git/phenet/cfg/aligned_adj.cfg
 var_id_file /humgen/diabetes2/users/satoshi/03.variant_based/03.input_gwas/02.curate/output/aligned_lipo_var_ids/aligned_lipo_var_ids_LPLremoved.txt
 output_file /humgen/diabetes2/users/oliverr/phenet/out/trained_aligned_adj_19_x03.cfg
+theano_compiledirs_prefix /humgen/diabetes2/users/oliverr/theano/compiledirs/dir
 train_eps 5e-4
 max_train_it 200
