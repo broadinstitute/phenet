@@ -112,6 +112,9 @@ while [[ $# -gt 0 ]]; do
           burn_in_steps)
             burn_in_steps=$value
             ;;
+          sample_steps)
+            sample_steps=$value
+            ;;
           train_eps)
             train_eps=$value
             ;;
@@ -191,6 +194,9 @@ case $action in
     if [ -n "$burn_in_steps" ]; then
       cmd_parts+=("--mcmc-samp-burn" "$burn_in_steps")
     fi
+    if [ -n "$sample_steps" ]; then
+      cmd_parts+=("--mcmc-samp-iter" "$sample_steps")
+    fi
     if [ -n "$train_eps" ]; then
       cmd_parts+=("--train-eps" "$train_eps")
     fi
@@ -264,6 +270,9 @@ case $action in
     cmd_parts+=("--pymc3")
     if [ -n "$burn_in_steps" ]; then
       cmd_parts+=("--mcmc-samp-burn" "$burn_in_steps")
+    fi
+    if [ -n "$sample_steps" ]; then
+      cmd_parts+=("--mcmc-samp-iter" "$sample_steps")
     fi
     if [ -n "$train_eps" ]; then
       cmd_parts+=("--train-eps" "$train_eps")
