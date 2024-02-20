@@ -48,6 +48,8 @@ def inspect_model(model):
     print(model)
     print("model.__dict__")
     print(model.__dict__)
+    print("model.M.__dict__")
+    print(model.M.__dict__)
     print("Done inspecting model")
 
 
