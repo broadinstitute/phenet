@@ -36,6 +36,21 @@ def bail(message):
     sys.exit(1)
 
 
+def inspect_model(model):
+    print("Now inspecting model")
+    print("endo_names")
+    print(model.endo_names)
+    print("trait names")
+    print(model.trait_names)
+    print("use_cauchy: " + model.use_cauchy)
+    print("use_pymc3" + model.use_pymc3)
+    print("model.pymc")
+    print(model.pymc)
+    print("dict(model.pymc)")
+    print(dict(model.pymc))
+    print("Done inspecting model")
+
+
 valid_opt_models = ['fmin_powell', 'fmin', 'fmin_l_bfgs_b', 'fmin_ncg', 'fmin_cg']
 
 usage = "usage: multi_fit.py [train|classify|phenotype] --config-file <file1> --config-file <fileN> [options]"
@@ -254,13 +269,13 @@ if train:
             trait]):
             bail(
                 "Error: please specify a value for %s for trait %s in the config file, or assign %s a value and specify it as fixed for %s" % (
-                EFFECT_COL, trait, need_fixed, trait))
+                    EFFECT_COL, trait, need_fixed, trait))
         if SE_COL not in traits[trait] and P_COL not in traits[trait] and (
                 FIXED not in traits[trait] or need_fixed not in traits[trait][FIXED] or need_fixed not in traits[
             trait]):
             bail(
                 "Error: please specify a value for either %s or %s for trait %s in the config file, or assign %s a value and specify it as fixed for %s" % (
-                SE_COL, P_COL, trait, need_fixed, trait))
+                    SE_COL, P_COL, trait, need_fixed, trait))
 
 if classify:
     for trait in traits:
@@ -268,7 +283,7 @@ if classify:
                 SE_COL in traits[trait] and EFFECT_COL not in traits[trait]):
             warn(
                 "Both %s and (%s or %s) are required for %s; specifying only one will cause it to be treated as missing" % (
-                EFFECT_COL, SE_COL, P_COL, trait))
+                    EFFECT_COL, SE_COL, P_COL, trait))
 
 if classify or phenotype:
     for trait in traits:
@@ -307,7 +322,7 @@ for trait in traits:
         for i in range(len(traits[trait][FILE])):
             if traits[trait][info] not in traits[trait][COL_MAP][i]:
                 bail("Error: file %s for trait %s does not have column %s" % (
-                traits[trait][FILE][i], trait, traits[trait][info]))
+                    traits[trait][FILE][i], trait, traits[trait][info]))
 
 use_var_ids = None
 if options.var_id_file is not None:
@@ -336,7 +351,7 @@ if options.num_chunks is not None and options.chunk is not None:
                 cols = line.strip('\n').split(options.delim)
                 if not len(cols) == len(traits[trait][COL_MAP][i]):
                     warn("Skipping line; number of columns (%s) doesn't match header (%s): %s" % (
-                    len(cols), len(traits[trait][COL_MAP][i]), line))
+                        len(cols), len(traits[trait][COL_MAP][i]), line))
 
                 var_id = None
                 if ID_COL in traits[trait]:
@@ -382,7 +397,7 @@ for trait in traits:
             cols = line.strip('\n').split(options.delim)
             if not len(cols) == len(traits[trait][COL_MAP][i]):
                 warn("Skipping line; number of columns (%s) doesn't match header (%s): %s" % (
-                len(cols), len(traits[trait][COL_MAP][i]), line))
+                    len(cols), len(traits[trait][COL_MAP][i]), line))
 
             var_id = None
             var_beta = None
@@ -597,7 +612,8 @@ if train:
     log("Final parameters:", INFO)
     for trait in traits:
         log("%s: beta=%s, mean=%s, var=%s" % (
-        trait, traits[trait][OBJ].beta, traits[trait][OBJ].beta * endos[endo][OBJ].mean, traits[trait][OBJ].var), DEBUG)
+            trait, traits[trait][OBJ].beta, traits[trait][OBJ].beta * endos[endo][OBJ].mean, traits[trait][OBJ].var),
+            DEBUG)
 
         norm = 1
         if len(endos) == 1 and options.normalize:
@@ -616,7 +632,8 @@ if train:
 
         for trait in traits:
             log("%s: beta=%s, mean=%s, var=%s" % (
-            trait, traits[trait][OBJ].beta, traits[trait][OBJ].beta * endos[endo][OBJ].mean, traits[trait][OBJ].var),
+                trait, traits[trait][OBJ].beta, traits[trait][OBJ].beta * endos[endo][OBJ].mean,
+                traits[trait][OBJ].var),
                 TRACE)
 
     if options.output_file:
@@ -697,7 +714,7 @@ if classify or phenotype:
                     dichotomous_traits[name] = lambda x: x - 1
                 else:
                     warn("Trait %s has only two values (%s) but they are not 0/1 or 1/2. Treating as quantitative" % (
-                    name, values))
+                        name, values))
 
             tot = 0
             tot2 = 0
@@ -776,11 +793,8 @@ if classify or phenotype:
             model_endos = [endos[name][OBJ] for name in endos]
             M = mpheno.Model(model_endos, model_traits, debug_level=options.debug_level, use_pymc3=options.pymc3,
                              use_cauchy=options.use_cauchy)
-            print("Now printing model")
-            print(M)
-            print("Printed model, now printing attributes")
-            print(dir(M))
-            print("Done printing attributes of model")
+
+            inspect_model(M)
             # M.compute_map_estimate(max_ests=options.map_max_ests, times_seen_break=options.map_times_seen_break, opt_fun=options.map_opt_fun)
             # Now sample
             M.sample(iter=options.mcmc_samp_iter, burn=options.mcmc_samp_burn, thin=options.mcmc_samp_thin)

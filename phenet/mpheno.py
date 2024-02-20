@@ -75,7 +75,7 @@ class Model:
             self.scipy = scipy
 
             self.endo_names = [x.name for x in endos]
-            self.trait_bames = [x.name for x in traits]
+            self.trait_names = [x.name for x in traits]
 
             self.M = self.pymc.Model()
             self.trace = None
