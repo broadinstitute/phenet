@@ -44,8 +44,8 @@ def inspect_model(model):
     print(model.trait_names)
     print("use_cauchy: " + str(model.use_cauchy))
     print("use_pymc3: " + str(model.use_pymc3))
-    print("Calling Model.debug()")
-    model.debug()
+    print("dict(model)")
+    print(dict(model))
     print("Done inspecting model")
 
 
