@@ -4,8 +4,6 @@ import sys
 import linecache
 import tracemalloc
 
-import theano
-
 
 def display_top(snapshot, key_type='lineno', limit=10):
     snapshot = snapshot.filter_traces((
@@ -39,11 +37,11 @@ def bail(message):
 def inspect_node(node):
     type_str = str(type(node))
     print(type_str)
-    if isinstance(node, theano.tensor.var.TensorConstant):
+    if type_str == "<class 'theano.tensor.var.TensorConstant'>":
         print(node.data)
         print(type(node.data))
         print(node.data.__dict__)
-    elif isinstance(node, theano.tensor.var.TensorVariable):
+    elif type_str == "<class 'theano.tensor.var.TensorVariable'>":
         print(node.owner)
         print(type(node.owner))
         print(node.owner.__dict__)
