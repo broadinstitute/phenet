@@ -48,8 +48,10 @@ def inspect_model(model):
     print(model.__dict__)
     print("model.M.__dict__")
     print(model.M.__dict__)
-    print("model.M.debug()")
-    print(model.M.debug())
+    for var_name, var_value in model.named_vars.items():
+        print("Node name: " + var_name)
+        print(var_value)
+        print(var_value.__dict__)
     print("Done inspecting model")
 
 
@@ -266,18 +268,12 @@ if train:
         for info in [FILE]:
             if info not in traits[trait]:
                 bail("Error: please specify a value for %s for trait %s in the config file" % (info, trait))
-        if EFFECT_COL not in traits[trait] and (
-                FIXED not in traits[trait] or need_fixed not in traits[trait][FIXED] or need_fixed not in traits[
-            trait]):
+        if EFFECT_COL not in traits[trait]:
+            bail("Error: please specify a value for %s for trait %s in the config file" % (EFFECT_COL, trait))
+        if SE_COL not in traits[trait] and P_COL not in traits[trait]:
             bail(
-                "Error: please specify a value for %s for trait %s in the config file, or assign %s a value and specify it as fixed for %s" % (
-                    EFFECT_COL, trait, need_fixed, trait))
-        if SE_COL not in traits[trait] and P_COL not in traits[trait] and (
-                FIXED not in traits[trait] or need_fixed not in traits[trait][FIXED] or need_fixed not in traits[
-            trait]):
-            bail(
-                "Error: please specify a value for either %s or %s for trait %s in the config file, or assign %s a value and specify it as fixed for %s" % (
-                    SE_COL, P_COL, trait, need_fixed, trait))
+                "Error: please specify a value for either %s or %s for trait %s in the config file" %
+                (SE_COL, P_COL, trait))
 
 if classify:
     for trait in traits:
@@ -359,11 +355,9 @@ if options.num_chunks is not None and options.chunk is not None:
                 if ID_COL in traits[trait]:
                     var_id = cols[traits[trait][COL_MAP][i][traits[trait][ID_COL]]]
                     var_id_for_chunk.add(var_id)
-        traits[trait][FH][i].close()
+            traits[trait][FH][i].close()
 
     var_id_for_chunk = sorted(var_id_for_chunk)
-
-    import math
 
     print("Len of var_id_for_chunk", len(var_id_for_chunk))
     start_index = round((options.chunk - 1) * float(len(var_id_for_chunk)) / options.num_chunks)
