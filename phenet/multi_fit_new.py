@@ -50,12 +50,14 @@ def inspect_model(model):
     print(model.M.__dict__)
     for var_name, var_value in model.M.named_vars.items():
         print("Node name: " + var_name)
-        print(var_value)
-        print(var_value.__dict__)
-        print("var_value.distribution")
-        print(var_value.distribution)
-        print("var_value.distribution.__dict__")
-        print(var_value.distribution.__dict__)
+        print("var_value.distribution.mean")
+        print(var_value.distribution.mean)
+        print("var_value.distribution.mean.__dict__")
+        print(var_value.distribution.mean.__dict__)
+        print("var_value.distribution.sd")
+        print(var_value.distribution.sd)
+        print("var_value.distribution.sd.__dict__")
+        print(var_value.distribution.sd.__dict__)
     print("Done inspecting model")
 
 
