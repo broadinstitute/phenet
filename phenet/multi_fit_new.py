@@ -34,6 +34,14 @@ def bail(message):
     sys.exit(1)
 
 
+def math_to_str(tensor_math):
+    print(type(tensor_math))
+    print(tensor_math.op)
+    print(tensor_math.inputs[0])
+    print(tensor_math.inputs[1])
+    return str(tensor_math.inputs[0]) + str(tensor_math.op) + str(tensor_math.inputs[0])
+
+
 def inspect_node(node):
     type_str = str(type(node))
     print(type_str)
@@ -41,8 +49,7 @@ def inspect_node(node):
         print(node.data)
     elif type_str == "<class 'theano.tensor.var.TensorVariable'>":
         print(node.owner)
-        print(type(node.owner))
-        print(node.owner.__dict__)
+        print(math_to_str(node.owner))
     else:
         print("Unknown type")
         print(type(node))
