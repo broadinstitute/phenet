@@ -4,7 +4,7 @@ import sys
 import linecache
 import tracemalloc
 
-from theano.tensor import Elemwise, TensorConstant
+import theano
 
 
 def display_top(snapshot, key_type='lineno', limit=10):
@@ -36,6 +36,20 @@ def bail(message):
     sys.exit(1)
 
 
+def inspect_node(node):
+    if type(node) is theano.tensor.var.TensorConstant:
+        print(node.data)
+        print(type(node.data))
+        print(node.data.__dict__)
+    elif type(node) is theano.tensor.var.TensorVariable:
+        print(node.owner)
+        print(type(node.owner))
+        print(node.owner.__dict__)
+    else:
+        print("Unknown type")
+        print(type(node))
+
+
 def inspect_model(model):
     print("Now inspecting model")
     print("endo_names")
@@ -51,23 +65,11 @@ def inspect_model(model):
     print("model.M.__dict__")
     print(model.M.__dict__)
     for var_name, var_value in model.M.named_vars.items():
-        print("Node name: " + var_name)
-        print("var_value.distribution.mean")
-        print(var_value.distribution.mean)
-        print(type(var_value.distribution.mean))
-        print(type(var_value.distribution.mean) is TensorConstant)
-        print(type(var_value.distribution.mean) is Elemwise)
-        print("var_value.distribution.mean.__dict__")
-        print(var_value.distribution.mean.__dict__)
-        print("var_value.distribution.sd")
-        print(var_value.distribution.sd)
-        print(type(var_value.distribution.sd))
-        print(type(var_value.distribution.sd) is TensorConstant)
-        print(type(var_value.distribution.sd) is Elemwise)
-        print("var_value.distribution.sd.__dict__")
-        print(var_value.distribution.sd.__dict__)
+        print("Mean for " + var_name)
+        inspect_node(var_value.distribution.mean)
+        print("SD for " + var_name)
+        inspect_node(var_value.distribution.sd)
     print("Done inspecting model")
-
 
 
 valid_opt_models = ['fmin_powell', 'fmin', 'fmin_l_bfgs_b', 'fmin_ncg', 'fmin_cg']
