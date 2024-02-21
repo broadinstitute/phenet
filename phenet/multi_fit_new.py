@@ -48,7 +48,7 @@ def inspect_model(model):
     print(model.__dict__)
     print("model.M.__dict__")
     print(model.M.__dict__)
-    for var_name, var_value in model.named_vars.items():
+    for var_name, var_value in model.M.named_vars.items():
         print("Node name: " + var_name)
         print(var_value)
         print(var_value.__dict__)
@@ -604,7 +604,7 @@ if train:
     output_fh = sys.stdout
     if options.output_file:
         output_fh = open(options.output_file, 'w')
-    M.draw('test')
+    # M.draw('test')
     log("Final parameters:", INFO)
     for trait in traits:
         log("%s: beta=%s, mean=%s, var=%s" % (
