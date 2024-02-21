@@ -40,11 +40,13 @@ def node_to_str(node):
         return str(node.data)
     elif type_str == "<class 'theano.tensor.var.TensorVariable'>":
         tensor_math = node.owner
-        print(type(tensor_math))
-        print(tensor_math.op)
-        print(type(tensor_math.op))
-        print(tensor_math.op.__dict__)
-        return node_to_str(tensor_math.inputs[0]) + str(tensor_math.op) + node_to_str(tensor_math.inputs[1])
+        op = tensor_math.op.scalar_op
+        print(op)
+        print(type(op))
+        print(op.__dict__)
+        return "(" + node_to_str(tensor_math.inputs[0]) + str(op) + node_to_str(tensor_math.inputs[1]) + ")"
+    elif type_str == "<class 'pymc3.model.FreeRV'>":
+        return node.name
     else:
         print("Unknown type")
         print(node)
