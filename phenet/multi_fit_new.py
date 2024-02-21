@@ -52,6 +52,10 @@ def inspect_model(model):
         print("Node name: " + var_name)
         print(var_value)
         print(var_value.__dict__)
+        print("var_value.distribution")
+        print(var_value.distribution)
+        print("var_value.distribution.__dict__")
+        print(var_value.distribution.__dict__)
     print("Done inspecting model")
 
 
