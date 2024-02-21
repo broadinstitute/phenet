@@ -37,11 +37,11 @@ def bail(message):
 
 
 def inspect_node(node):
-    if type(node) is theano.tensor.var.TensorConstant:
+    if isinstance(node, theano.tensor.var.TensorConstant):
         print(node.data)
         print(type(node.data))
         print(node.data.__dict__)
-    elif type(node) is theano.tensor.var.TensorVariable:
+    elif isinstance(node, theano.tensor.var.TensorVariable):
         print(node.owner)
         print(type(node.owner))
         print(node.owner.__dict__)
