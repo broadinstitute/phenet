@@ -34,25 +34,18 @@ def bail(message):
     sys.exit(1)
 
 
-def math_to_str(tensor_math):
-    print(type(tensor_math))
-    print(tensor_math.op)
-    print(tensor_math.inputs[0])
-    print(tensor_math.inputs[1])
-    return str(tensor_math.inputs[0]) + str(tensor_math.op) + str(tensor_math.inputs[0])
-
-
-def inspect_node(node):
+def node_to_str(node):
     type_str = str(type(node))
-    print(type_str)
     if type_str == "<class 'theano.tensor.var.TensorConstant'>":
-        print(node.data)
+        return str(node.data)
     elif type_str == "<class 'theano.tensor.var.TensorVariable'>":
-        print(node.owner)
-        print(math_to_str(node.owner))
+        tensor_math = node.owner
+        print(type(tensor_math))
+        print(tensor_math.op)
+        print(tensor_math.op.__dict__)
+        return node_to_str(tensor_math.inputs[0]) + str(tensor_math.op) + node_to_str(tensor_math.inputs[1])
     else:
-        print("Unknown type")
-        print(type(node))
+        return "[Unknown type: " + str(type(node)) + "]"
 
 
 def inspect_model(model):
@@ -70,10 +63,8 @@ def inspect_model(model):
     print("model.M.__dict__")
     print(model.M.__dict__)
     for var_name, var_value in model.M.named_vars.items():
-        print("Mean for " + var_name)
-        inspect_node(var_value.distribution.mean)
-        print("SD for " + var_name)
-        inspect_node(var_value.distribution.sd)
+        print("Mean for " + var_name + ": " + node_to_str(var_value.distribution.mean))
+        print("SD for " + var_name + ": " + node_to_str(var_value.distribution.sd))
     print("Done inspecting model")
 
 
