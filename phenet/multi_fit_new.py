@@ -37,6 +37,8 @@ def bail(message):
 
 
 def inspect_node(node):
+    type_str = str(type(node))
+    print(type_str)
     if isinstance(node, theano.tensor.var.TensorConstant):
         print(node.data)
         print(type(node.data))
