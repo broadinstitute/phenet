@@ -42,9 +42,14 @@ def node_to_str(node):
         tensor_math = node.owner
         print(type(tensor_math))
         print(tensor_math.op)
+        print(type(tensor_math.op))
         print(tensor_math.op.__dict__)
         return node_to_str(tensor_math.inputs[0]) + str(tensor_math.op) + node_to_str(tensor_math.inputs[1])
     else:
+        print("Unknown type")
+        print(node)
+        print(type(node))
+        print(node.__dict__)
         return "[Unknown type: " + str(type(node)) + "]"
 
 
