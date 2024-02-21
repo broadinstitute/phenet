@@ -4,6 +4,8 @@ import sys
 import linecache
 import tracemalloc
 
+from theano.tensor import Elemwise, TensorConstant
+
 
 def display_top(snapshot, key_type='lineno', limit=10):
     snapshot = snapshot.filter_traces((
@@ -52,13 +54,18 @@ def inspect_model(model):
         print("Node name: " + var_name)
         print("var_value.distribution.mean")
         print(var_value.distribution.mean)
+        print(type(var_value.distribution.mean) is TensorConstant)
+        print(type(var_value.distribution.mean) is Elemwise)
         print("var_value.distribution.mean.__dict__")
         print(var_value.distribution.mean.__dict__)
         print("var_value.distribution.sd")
         print(var_value.distribution.sd)
+        print(type(var_value.distribution.sd) is TensorConstant)
+        print(type(var_value.distribution.sd) is Elemwise)
         print("var_value.distribution.sd.__dict__")
         print(var_value.distribution.sd.__dict__)
     print("Done inspecting model")
+
 
 
 valid_opt_models = ['fmin_powell', 'fmin', 'fmin_l_bfgs_b', 'fmin_ncg', 'fmin_cg']
