@@ -1,9 +1,7 @@
 import optparse
 import sys
-import copy
 
 import linecache
-import os
 import tracemalloc
 
 
@@ -50,6 +48,8 @@ def inspect_model(model):
     print(model.__dict__)
     print("model.M.__dict__")
     print(model.M.__dict__)
+    print("model.M.debug()")
+    print(model.M.debug())
     print("Done inspecting model")
 
 
@@ -105,9 +105,9 @@ phenotype = False
 if mode == "train":
     train = True
 elif mode == "classify":
-    classify = True;
+    classify = True
 elif mode == "phenotype":
-    phenotype = True;
+    phenotype = True
 else:
     bail("Unrecognized mode %s" % mode)
 
