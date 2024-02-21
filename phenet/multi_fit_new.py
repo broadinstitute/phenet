@@ -39,8 +39,6 @@ def inspect_node(node):
     print(type_str)
     if type_str == "<class 'theano.tensor.var.TensorConstant'>":
         print(node.data)
-        print(type(node.data))
-        print(node.data.__dict__)
     elif type_str == "<class 'theano.tensor.var.TensorVariable'>":
         print(node.owner)
         print(type(node.owner))
